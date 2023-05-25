@@ -1,0 +1,11 @@
+{
+    "name": "react-jobly",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+      "start": "concurrently \"cd react-jobly-backend && npm start\" \"cd react-jobly-frontend && npm start\""
+    },
+    "dependencies": {
+      "concurrently": "^6.4.0"
+    }
+  }
