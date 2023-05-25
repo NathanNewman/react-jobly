@@ -5,7 +5,6 @@ import Home from "./Home";
 import Forms from "./Forms";
 import { loginFields } from "./helpers/formFields";
 import { signupFields } from "./helpers/formFields";
-import JoblyApi from "./helpers/api";
 import List from "./List"
 
 function App() {
@@ -25,10 +24,10 @@ function App() {
               <Forms fields={loginFields} />
             </Route>
             <Route exact path="/companies">
-              <List fetchData={JoblyApi.fetchCompanies} />
+              <List listType="companies" />
             </Route>
             <Route exact path="/jobs">
-              <List fetchData={JoblyApi.fetchJobs} />
+              <List listType="jobs" />
             </Route>
           </Switch>
         </main>
