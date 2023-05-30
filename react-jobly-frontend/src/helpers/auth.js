@@ -5,9 +5,9 @@ import JoblyApi from './api';
 const login = async (username, password) => {
   try {
     const token = await JoblyApi.login(username, password);
-    console.log('Token:', token); // Check the value of the token
     localStorage.setItem("authenticated", token);
     localStorage.setItem("isAdmin", "false");
+    localStorage.setItem("username", username);
     
     JoblyApi.token = token;
     return token;
@@ -18,10 +18,8 @@ const login = async (username, password) => {
 };
 
 const logout = () => {
-  console.log(localStorage.getItem("authenticated"));
   localStorage.removeItem("authenticated");
   localStorage.removeItem("isAdmin");
-  console.log(localStorage.getItem("authenticated"));
 };
 
 export {

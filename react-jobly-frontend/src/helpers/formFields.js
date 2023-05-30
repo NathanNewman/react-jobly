@@ -40,3 +40,32 @@ export const signupFields = [
     type: "email",
   },
 ];
+
+export const profileFields = [
+  {
+    formType: "profile",
+    label: "Username",
+    name: "username",
+    type: "text",
+  },
+  {
+    label: "Password",
+    name: "password",
+    type: "password",
+  },
+  {
+    label: "First Name",
+    name: "firstName",
+    type: "text",
+  },
+  {
+    label: "Last Name",
+    name: "lastName",
+    type: "text",
+  },
+  {
+    label: "Email",
+    name: "email",
+    type: "email",
+  },
+]

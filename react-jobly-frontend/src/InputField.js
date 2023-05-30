@@ -9,7 +9,7 @@ function InputField({ label, type, name, value, onChange }) {
         type={type}
         name={name}
         id={name}
-        value={value}
+        value={value || ""}
         onChange={onChange}
       />
     </FormGroup>

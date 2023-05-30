@@ -17,7 +17,6 @@ class JoblyApi {
   static async request(endpoint, data = {}, method = "get") {
     console.debug("API Call:", endpoint, data, method);
     const token = localStorage.getItem("Authenticated");
-    console.log(token);
     
 
     //there are multiple ways to pass an authorization token, this is how you pass it in the header.
@@ -69,7 +68,15 @@ class JoblyApi {
     }
   }
 
-  // User routes
+  static async fetchApplications() {
+    try {
+      const res = await this.request("applications/");
+      return res.applications;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
 
   static async createUser(user) {
     let res = await this.request("auth/register", user, "post");
@@ -90,6 +97,11 @@ class JoblyApi {
       // Handle the error
       console.error(error);
     }
+  }
+
+  static async getUser(username) {
+    let res = await this.request(`users/${username}`);
+    return res.user;
   }
 
   

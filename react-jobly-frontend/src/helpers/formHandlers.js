@@ -4,6 +4,7 @@ import { login } from "./auth"
 async function handleLogin(formData, login, history) {
   const { username, password } = formData;
   const token = await login(username, password);
+  
   history.push("/");
   return token;
 }

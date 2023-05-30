@@ -1,25 +1,50 @@
-import React, { useState, useContext } from "react";
-import { useHistory } from "react-router-dom";
+import React, { useState, useContext, useEffect } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import { Form, Button } from "reactstrap";
 import InputField from "./InputField";
 import { login } from "./helpers/auth";
 import { handleSubmit } from "./helpers/formHandlers";
 import { AuthContext } from './helpers/AuthContext';
+import JoblyApi from './helpers/api'; // Import your API module
 
 function Forms({ fields }) {
-  const [formData, setFormData] = useState(
-    fields.reduce(
-      (obj, input) => ({
-        ...obj,
-        [input.name]: "",
-      }),
-      {}
-    )
-  );
-
+  const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState(null);
   const history = useHistory();
   const { setAuthenticated } = useContext(AuthContext);
+  const { user } = useParams(); // Get the username from the route parameters
+
+  useEffect(() => {
+    if (fields[0].formType === "profile") {
+
+      // Call the API and populate the form fields with user data
+      JoblyApi.getUser(user)
+        .then((userData) => {
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            ...fields.reduce((obj, input) => {
+              obj[input.name] = userData[input.name] || "";
+              return obj;
+            }, {}),
+          }));
+        })
+        .catch((error) => {
+          setErrors(error.toString());
+        });
+    } else {
+      // Initialize the form fields with empty values
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        ...fields.reduce((obj, input) => {
+          obj[input.name] = "";
+          return obj;
+        }, {}),
+      }));
+    }
+  }, []);
+
+  useEffect(() => {
+  }, [formData]);
 
   async function onSubmit(event) {
     event.preventDefault();

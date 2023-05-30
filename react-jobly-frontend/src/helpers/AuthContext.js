@@ -7,19 +7,22 @@ export const AuthContext = createContext();
 // Create a provider component to wrap the app and provide the authentication state
 export const AuthProvider = ({ children }) => {
   const [authenticated, setAuthenticated] = useState(false);
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
-    // Check if token exists in localStorage
-    const token = localStorage.getItem("authenticated");
-    if (token) {
-      // Update AuthContext with the token
+    // Check if token and username exist in localStorage
+    const token = localStorage.getItem('authenticated');
+    const storedUsername = localStorage.getItem('username');
+    if (token && storedUsername) {
+      // Update AuthContext with the token and username
       setAuthenticated(token);
+      setUsername(storedUsername);
       JoblyApi.token = token;
     }
   }, []);
 
   return (
-    <AuthContext.Provider value={{ authenticated, setAuthenticated }}>
+    <AuthContext.Provider value={{ authenticated, setAuthenticated, username }}>
       {children}
     </AuthContext.Provider>
   );
