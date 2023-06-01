@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
       setUsername(storedUsername);
       JoblyApi.token = token;
     }
-  }, []);
+  }, [setAuthenticated]);
 
   return (
     <AuthContext.Provider value={{ authenticated, setAuthenticated, username }}>

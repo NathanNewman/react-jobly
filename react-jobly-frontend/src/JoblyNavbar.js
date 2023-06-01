@@ -32,8 +32,7 @@ const JoblyNavbar = () => {
                 Jobs
               </Link>
             </NavItem>
-            <NavItem>
-            </NavItem>
+            <NavItem></NavItem>
             <NavItem>
               <Link
                 to={`/profile/${username}`}

@@ -47,6 +47,7 @@ export const profileFields = [
     label: "Username",
     name: "username",
     type: "text",
+    readOnly: true,
   },
   {
     label: "Password",

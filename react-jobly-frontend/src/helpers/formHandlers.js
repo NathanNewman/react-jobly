@@ -1,35 +1,37 @@
 import JoblyApi from "./api";
-import { login } from "./auth"
+import { login } from "./auth";
 
-async function handleLogin(formData, login, history) {
+async function handleLogin(formData, history) {
   const { username, password } = formData;
   const token = await login(username, password);
-  
+
   history.push("/");
   return token;
 }
 
 async function handleSignup(formData, history) {
-  const { username, password, firstName, lastName, email } = formData;
-  const newUser = {
-    username,
-    password,
-    firstName,
-    lastName,
-    email,
-  };
-
-  // Make the API call to create a new user
-  await JoblyApi.createUser(newUser);
-  login(username, password)
+  const { username, password } = formData;
+  const token = await JoblyApi.createUser(formData);
+  await login(username, password);
   history.push("/");
+  return token;
 }
 
-export async function handleSubmit(formData, formType, login, history) {
+async function handleEditUser(formData, history) {
+  const user = await JoblyApi.patchUser(formData);
+  const token = await handleLogin(formData, history);
+  return token;
+}
+
+export async function handleSubmit(formData, formType, history) {
   if (formType === "login") {
-    const token = await handleLogin(formData, login, history);
+    const token = await handleLogin(formData, history);
     return token;
   } else if (formType === "sign-up") {
-    await handleSignup(formData, history);
+    const token = await handleSignup(formData, history);
+    return token;
+  } else if (formType === "profile") {
+    const token = await handleEditUser(formData, history);
+    return token;
   }
 }

@@ -3,7 +3,7 @@ import { Button } from "reactstrap";
 import { useHistory } from "react-router-dom";
 import { AuthContext } from "./helpers/AuthContext";
 import { logout } from "./helpers/auth";
-import "./home.css";
+import "./background.css";
 
 function Home() {
   const history = useHistory();
@@ -16,7 +16,7 @@ function Home() {
   };
 
   return (
-    <div className="home">
+    <div className="background">
       <h1 className="text-white font-weight-bold">Jobly</h1>
       {authenticated ? (
         <div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   ListGroup,
   ListGroupItem,
@@ -10,25 +10,47 @@ import {
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import JoblyApi from "./helpers/api";
+import { AuthContext } from "./helpers/AuthContext";
 
 const Items = ({ items, listType }) => {
-  const [appliedJobs, setAppliedJobs] = useState([]);
+  const [itemsList, setItemsList] = useState(); // Use the useState hook correctly
+  const { username } = useContext(AuthContext);
 
-  const handleApply = (jobId) => {
-    if (appliedJobs.includes(jobId)) {
-      setAppliedJobs(appliedJobs.filter((id) => id !== jobId));
-    } else {
-      setAppliedJobs([...appliedJobs, jobId]);
-    }
-  };
+  useEffect(() => {
+    setItemsList(items);
+  }, [items]);
 
-  const isJobApplied = (jobId) => {
-    return appliedJobs.includes(jobId);
-  };
+  async function handleApply(jobId) {
+    await JoblyApi.applyToJob(username, jobId);
+    const updatedItems = items.map((item) => {
+      if (item.id === jobId) {
+        return { ...item, applied: true };
+      }
+      return item;
+    });
+    setItemsList(updatedItems);
+  }
+
+  async function handleUnapply(jobId) {
+    await JoblyApi.unapplyToJob(username, jobId);
+    const updatedItems = items.map((item) => {
+      if (item.id === jobId) {
+        return { ...item, applied: false };
+      }
+      return item;
+    });
+    setItemsList(updatedItems);
+  }
+
   const renderListItems = () => {
+    if (!itemsList) {
+      return null;
+    }
+
     switch (listType) {
       case "companies":
-        return items.map((company) => (
+        return itemsList.map((company) => (
           <ListGroupItem key={uuidv4()}>
             <Card>
               <CardBody>
@@ -54,52 +76,32 @@ const Items = ({ items, listType }) => {
           </ListGroupItem>
         ));
       case "jobs":
-        return items.map((job) => (
+        return itemsList.map((job) => (
           <ListGroupItem key={uuidv4()}>
             <Card>
               <CardBody>
                 <div className="d-flex">
                   <div className="mr-3">
                     <Button
-                      color={isJobApplied(job.id) ? "danger" : "primary"}
-                      onClick={() => handleApply(job.id)}
+                      color={job.applied ? "danger" : "primary"}
+                      onClick={() =>
+                        job.applied ? handleUnapply(job.id) : handleApply(job.id)
+                      }
                     >
-                      {isJobApplied(job.id) ? "Unapply" : "Apply"}
+                      {job.applied ? "Unapply" : "Apply"}
                     </Button>
                   </div>
                   <div className="flex-grow-1">
                     <CardTitle tag="h5">{job.title}</CardTitle>
                     <CardText>Salary: {job.salary}</CardText>
                     <CardText>Equity: {job.equity}</CardText>
+                    <CardText>Company: {job.companyName}</CardText>
                   </div>
                 </div>
               </CardBody>
             </Card>
           </ListGroupItem>
         ));
-      case "applications":
-        return items.map((application) => (
-          <ListGroupItem key={`${application.username}-${application.job_id}`}>
-            <Card>
-              <CardBody>
-                <CardTitle tag="h5">{application.job_title}</CardTitle>
-                <CardText>Applicant: {application.username}</CardText>
-              </CardBody>
-            </Card>
-          </ListGroupItem>
-        ));
-        case "company":
-          return items.jobs.map((job) => (
-            <ListGroupItem key={uuidv4()}>
-              <Card>
-                <CardBody>
-                  <CardTitle tag="h5">{job.title}</CardTitle>
-                  <CardText>Salary: {job.salary}</CardText>
-                  <CardText>Equity: {job.equity}</CardText>
-                </CardBody>
-              </Card>
-            </ListGroupItem>
-          ));
       default:
         return null;
     }

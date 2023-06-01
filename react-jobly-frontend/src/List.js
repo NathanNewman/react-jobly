@@ -1,31 +1,56 @@
-import React, { useState, useEffect } from "react";
-import {useHistory} from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import { Container, Input, Button, Row, Col } from "reactstrap";
 import Items from "./Items";
 import JoblyApi from "./helpers/api";
 import formatHeading from "./helpers/formatHeading";
+import { AuthContext } from "./helpers/AuthContext";
 
 const List = ({ listType }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [listItems, setListItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
+  const { username } = useContext(AuthContext);
   const history = useHistory();
 
   useEffect(() => {
     const fetchListItems = async () => {
-      let list = [];
-      if (listType === "companies") list = await JoblyApi.fetchCompanies();
-      if (listType === "jobs") list = await JoblyApi.fetchJobs();
-      if (listType === "company") {
-        const handle = history.location.pathname.substring('/companies/'.length);
-        list = await JoblyApi.getCompany(handle);
+      if (listType === "companies") {
+        const companies = await JoblyApi.fetchCompanies();
+        setListItems(companies);
+        setFilteredItems(companies);
       }
-      setListItems(list);
-      setFilteredItems(list); // Set filteredItems to contain all items initially
+      if (listType === "jobs") {
+        const jobs = await JoblyApi.fetchJobs();
+        console.log(jobs);
+
+        if (username) {
+          const user = await JoblyApi.getUser(username);
+          const userApplications = user.applications || [];
+
+          const updatedJobs = jobs.map((job) => ({
+            ...job,
+            applied: userApplications.includes(job.id),
+          }));
+
+          console.log(updatedJobs);
+
+          setListItems(updatedJobs);
+          setFilteredItems(updatedJobs);
+        }
+      }
+      if (listType === "company") {
+        const handle = history.location.pathname.substring(
+          "/companies/".length
+        );
+        const company = await JoblyApi.getCompany(handle);
+        setListItems(company);
+        setFilteredItems(company);
+      }
     };
 
     fetchListItems();
-  }, [listType, history.location.pathname]);
+  }, [listType, history.location.pathname, username]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);

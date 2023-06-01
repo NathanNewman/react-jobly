@@ -2,10 +2,10 @@ import React, { useState, useContext, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { Form, Button } from "reactstrap";
 import InputField from "./InputField";
-import { login } from "./helpers/auth";
 import { handleSubmit } from "./helpers/formHandlers";
-import { AuthContext } from './helpers/AuthContext';
-import JoblyApi from './helpers/api'; // Import your API module
+import { AuthContext } from "./helpers/AuthContext";
+import JoblyApi from "./helpers/api"; // Import your API module
+import "./background.css";
 
 function Forms({ fields }) {
   const [formData, setFormData] = useState({});
@@ -16,7 +16,6 @@ function Forms({ fields }) {
 
   useEffect(() => {
     if (fields[0].formType === "profile") {
-
       // Call the API and populate the form fields with user data
       JoblyApi.getUser(user)
         .then((userData) => {
@@ -43,14 +42,13 @@ function Forms({ fields }) {
     }
   }, []);
 
-  useEffect(() => {
-  }, [formData]);
+  useEffect(() => {}, [formData]);
 
   async function onSubmit(event) {
     event.preventDefault();
     try {
       const formType = fields[0].formType;
-      const token = await handleSubmit(formData, formType, login, history);
+      const token = await handleSubmit(formData, formType, history);
       setAuthenticated(token);
     } catch (error) {
       setErrors(error.toString());
@@ -70,11 +68,14 @@ function Forms({ fields }) {
     .replace(/(?:^|\s)\S/g, (char) => char.toUpperCase());
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", padding: "20px" }}>
+    <div
+      class="background"
+      style={{ display: "flex", justifyContent: "center", padding: "20px" }}
+    >
       {errors && <div className="alert alert-danger">{errors}</div>}
-      
-      <Form onSubmit={onSubmit}>
-      <h1>{formTitle}</h1>
+
+      <Form onSubmit={onSubmit} style={{ color: "white" }}>
+        <h1>{formTitle}</h1>
         {fields.map((input) => (
           <InputField
             key={input.name}
