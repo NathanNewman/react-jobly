@@ -14,7 +14,7 @@ import JoblyApi from "./helpers/api";
 import { AuthContext } from "./helpers/AuthContext";
 
 const Items = ({ items, listType }) => {
-  const [itemsList, setItemsList] = useState(); // Use the useState hook correctly
+  const [itemsList, setItemsList] = useState(items); // Use the useState hook correctly
   const { username } = useContext(AuthContext);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const Items = ({ items, listType }) => {
 
   async function handleApply(jobId) {
     await JoblyApi.applyToJob(username, jobId);
-    const updatedItems = items.map((item) => {
+    const updatedItems = itemsList.map((item) => {
       if (item.id === jobId) {
         return { ...item, applied: true };
       }
@@ -34,7 +34,7 @@ const Items = ({ items, listType }) => {
 
   async function handleUnapply(jobId) {
     await JoblyApi.unapplyToJob(username, jobId);
-    const updatedItems = items.map((item) => {
+    const updatedItems = itemsList.map((item) => {
       if (item.id === jobId) {
         return { ...item, applied: false };
       }
