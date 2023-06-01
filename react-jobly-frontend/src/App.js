@@ -4,9 +4,8 @@ import JoblyNavbar from "./JoblyNavbar";
 import Home from "./Home";
 import Forms from "./Forms";
 import { loginFields, signupFields, profileFields } from "./helpers/formFields";
-import List from "./List"
+import Lists from "./Lists"
 import CompanyDetails from "./CompanyDetails";
-import UserProfile from "./UserProfile";
 
 function App() {
   return (
@@ -25,16 +24,13 @@ function App() {
               <Forms fields={loginFields} />
             </Route>
             <Route exact path="/companies">
-              <List listType="companies" />
+              <Lists listType="companies" />
             </Route>
             <Route exact path="/companies/:handle">
               <CompanyDetails />
             </Route>
             <Route exact path="/jobs">
-              <List listType="jobs" />
-            </Route>
-            <Route exact path="/applications">
-              <List listType="applications" />
+              <Lists listType="jobs" />
             </Route>
             <Route exact path="/profile/:user">
               <Forms fields={profileFields} />

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { Container, Input, Button, Row, Col } from "reactstrap";
-import Items from "./Items";
+import Item from "./Item";
 import JoblyApi from "./helpers/api";
 import formatHeading from "./helpers/formatHeading";
 import { AuthContext } from "./helpers/AuthContext";
 
-const List = ({ listType }) => {
+const Lists = ({ listType }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [listItems, setListItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
@@ -25,6 +25,8 @@ const List = ({ listType }) => {
         console.log(jobs);
 
         if (username) {
+            setListItems([]);
+            setFilteredItems([]);
           const user = await JoblyApi.getUser(username);
           const userApplications = user.applications || [];
 
@@ -81,6 +83,24 @@ const List = ({ listType }) => {
 
   const headingText = formatHeading(history);
 
+  const spinner = (
+    <div>
+      <h1>Nothing to see here!</h1>
+      <h1>Nothing to see here!</h1>
+      <h1>Nothing to see here!</h1>
+      <h1>Nothing to see here!</h1>
+      <h1>Nothing to see here!</h1>
+    </div>
+  );
+
+  const listOfItems = (
+    <Col xs="12" sm="auto" md="8" lg="6">
+      {filteredItems.map((item) => (
+        <Item key={item.id} item={item} listType={listType} />
+      ))}
+    </Col>
+  );
+
   return (
     <Container className="text-center mt-4">
       <h1>{headingText}</h1>
@@ -111,12 +131,10 @@ const List = ({ listType }) => {
         </Col>
       </Row>
       <Row className="justify-content-center">
-        <Col xs="12" sm="auto" md="8" lg="6">
-          <Items items={filteredItems} listType={listType} />
-        </Col>
+        {filteredItems.length > 0 ? listOfItems : spinner}
       </Row>
     </Container>
   );
 };
 
-export default List;
+export default Lists;
