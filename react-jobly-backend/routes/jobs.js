@@ -126,5 +126,37 @@ router.delete("/:id", ensureAdmin, async function (req, res, next) {
   }
 });
 
+/** GET /applications/:user =>
+ *   { jobs: [ { id, title, salary, equity, companyHandle, companyName, applied }, ...] }
+ *
+ * Can provide search filter in query:
+ * - minSalary
+ * - hasEquity (true returns only jobs with equity > 0, other values ignored)
+ * - title (will find case-insensitive, partial matches)
+ *
+ * Authorization required: none
+ */
+
+router.get("/applications/:user", async function (req, res, next) {
+  const q = req.query;
+  const username = req.params.user;
+  // arrive as strings from querystring, but we want as int/bool
+  if (q.minSalary !== undefined) q.minSalary = +q.minSalary;
+  q.hasEquity = q.hasEquity === "true";
+
+  try {
+    const validator = jsonschema.validate(q, jobSearchSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
+
+    const jobs = await Job.findAllWithApplications(username);
+    return res.json({ jobs });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 
 module.exports = router;

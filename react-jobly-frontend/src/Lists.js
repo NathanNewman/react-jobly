@@ -21,25 +21,11 @@ const Lists = ({ listType }) => {
         setFilteredItems(companies);
       }
       if (listType === "jobs") {
-        const jobs = await JoblyApi.fetchJobs();
+        const jobs = await JoblyApi.fetchJobs(username);
         console.log(jobs);
 
-        if (username) {
-            setListItems([]);
-            setFilteredItems([]);
-          const user = await JoblyApi.getUser(username);
-          const userApplications = user.applications || [];
-
-          const updatedJobs = jobs.map((job) => ({
-            ...job,
-            applied: userApplications.includes(job.id),
-          }));
-
-          console.log(updatedJobs);
-
-          setListItems(updatedJobs);
-          setFilteredItems(updatedJobs);
-        }
+        setListItems(jobs);
+        setFilteredItems(jobs);
       }
       if (listType === "company") {
         const handle = history.location.pathname.substring(

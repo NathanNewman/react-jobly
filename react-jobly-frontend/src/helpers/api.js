@@ -60,9 +60,9 @@ class JoblyApi {
     }
   }
 
-  static async fetchJobs() {
+  static async fetchJobs(username) {
     try {
-      const res = await this.request("jobs/");
+      const res = await this.request(`jobs/applications/${username}`);
       return res.jobs;
     } catch (error) {
       console.error(error);
@@ -101,8 +101,9 @@ class JoblyApi {
       // Do something with the token
     } catch (error) {
       // Handle the error
-      console.error(error);
-      return [];
+      console.error("API Error:", error.response);
+      let message = error.response.data.error.message;
+      throw Array.isArray(message) ? message : [message];
     }
   }
 
@@ -112,7 +113,6 @@ class JoblyApi {
       return res.user;
     } catch (error) {
       console.error(error);
-      return [];
     }
   }
 
@@ -132,27 +132,32 @@ class JoblyApi {
       return res.user;
     } catch (error) {
       console.error(error);
-      return [];
     }
   }
 
   static async applyToJob(username, jobId) {
     try {
-      const res = await this.request(`users/${username}/jobs/${jobId}`, {}, "post");
+      const res = await this.request(
+        `users/${username}/jobs/${jobId}`,
+        {},
+        "post"
+      );
       return res.application;
     } catch (error) {
       console.error(error);
-      return [];
     }
   }
-  
+
   static async unapplyToJob(username, jobId) {
     try {
-      const res = await this.request(`users/${username}/jobs/${jobId}`, {}, "delete");
+      const res = await this.request(
+        `users/${username}/jobs/${jobId}`,
+        {},
+        "delete"
+      );
       return res.message;
     } catch (error) {
       console.error(error);
-      return [];
     }
   }
 }

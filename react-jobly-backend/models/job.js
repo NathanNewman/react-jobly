@@ -170,6 +170,45 @@ class Job {
 
     if (!job) throw new NotFoundError(`No job: ${id}`);
   }
+
+  /** Find all jobs with applications by a specific user (optional filter on searchFilters).
+   *
+   * searchFilters (all optional):
+   * - minSalary
+   * - hasEquity (true returns only jobs with equity > 0, other values ignored)
+   * - title (will find case-insensitive, partial matches)
+   * - username (retrieve applications by a specific user)
+   *
+   * Returns [{ id, title, salary, equity, companyHandle, companyName, applied }, ...]
+   * */
+
+  static async findAllWithApplications(username) {
+    console.log(username);
+    let query = `
+      SELECT j.id,
+             j.title,
+             j.salary,
+             j.equity,
+             j.company_handle AS "companyHandle",
+             c.name AS "companyName",
+             (a.username IS NOT NULL) AS applied
+      FROM jobs j
+      LEFT JOIN companies AS c ON c.handle = j.company_handle
+      LEFT JOIN applications AS a ON j.id = a.job_id AND a.username = $1`;
+  
+    let queryValues = [username];
+  
+    let whereExpressions = [];
+  
+    if (whereExpressions.length > 0) {
+      query += " WHERE " + whereExpressions.join(" AND ");
+    }
+  
+    query += " ORDER BY title";
+  
+    const jobsRes = await db.query(query, queryValues);
+    return jobsRes.rows;
+  }
 }
 
 module.exports = Job;

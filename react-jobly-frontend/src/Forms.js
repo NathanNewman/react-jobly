@@ -40,7 +40,7 @@ function Forms({ fields }) {
         }, {}),
       }));
     }
-  }, []);
+  }, [fields, user]);
 
   useEffect(() => {}, [formData]);
 
@@ -48,10 +48,23 @@ function Forms({ fields }) {
     event.preventDefault();
     try {
       const formType = fields[0].formType;
-      const token = await handleSubmit(formData, formType, history);
+      const token = await handleSubmit(formData, formType);
+      console.log(token);
+      if(token){
       setAuthenticated(token);
+      history.push("/");
+      }
     } catch (error) {
-      setErrors(error.toString());
+      let errorMessage;
+      if (error.response && error.response.data && error.response.data.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message === "Network Error") {
+        errorMessage = "Network Error: Unable to connect to the server.";
+      } else {
+        errorMessage = "Invalid username or password.";
+      }
+      setErrors(errorMessage);
+      setAuthenticated(false);
     }
   }
 
